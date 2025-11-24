@@ -1,0 +1,58 @@
+# --- SISTEMA OPERATIVO (Importante para mantener limpio el repo) ---
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# --- MAVEN (Backend y Frontend) ---
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+dependency-reduced-pom.xml
+# NOTA: Borré la línea del wrapper.jar para que sí se suba y funcione el ./mvnw
+
+# --- GRADLE (Por si acaso) ---
+.gradle/
+build/
+
+# --- IDE: STS / ECLIPSE ---
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+
+# --- IDE: INTELLIJ IDEA ---
+.idea
+*.iws
+*.iml
+*.ipr
+
+# --- IDE: NETBEANS (Sin la barra inicial para que sirva en subcarpetas) ---
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# --- IDE: VS CODE ---
+.vscode/
+
+# --- LOGS Y OTROS ---
+*.log
+logs/
+*.pid
+HELP.md
+
+# --- SECRETOS (Seguridad) ---
+.env
+config/application-local.yml
+
+# --- otros ---
+supermarkettest.json
+Class Diagram.pdf
