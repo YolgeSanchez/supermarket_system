@@ -9,16 +9,16 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @JsonPropertyOrder({
-        "id",
-        "name",
-        "brand",
-        "category",
-        "stock",
-        "basePrice",
-        "taxPercentage",
-        "finalPrice",
-        "createdAt",
-        "updatedAt"
+    "id",
+    "name",
+    "brand",
+    "category",
+    "stock",
+    "basePrice",
+    "taxPercentage",
+    "finalPrice",
+    "createdAt",
+    "updatedAt"
 })
 @Data
 public class ProductResponse {
