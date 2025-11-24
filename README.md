@@ -1,2 +1,2 @@
-\# supermarket management system
+# supermarket management system
 
