@@ -124,6 +124,20 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorDto> handleBadRequestException(BadRequestException ex, HttpServletRequest request) {
+        ErrorDto error = new ErrorDto(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "400 BAD_REQUEST",
+                ex.getMessage(),
+                request.getRequestURI(),
+                ex.getClass().getName()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ErrorDto> handleMissingParameter(MissingServletRequestParameterException ex, HttpServletRequest request) {
         ErrorDto error = new ErrorDto(

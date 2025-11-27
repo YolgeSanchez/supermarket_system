@@ -1,5 +1,7 @@
 package com.yolge.supermarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yolge.supermarket.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -12,6 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,8 +29,14 @@ public class User implements UserDetails {
     private String fullName;
     private String username;
     private String password;
+    private LocalDateTime deletedAt;
+
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "cashier")
+    @JsonIgnore
+    private List<Sale> sales = new ArrayList<>();
 
     @CreationTimestamp
     private LocalDateTime createdAt;
@@ -35,7 +44,15 @@ public class User implements UserDetails {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private LocalDateTime deletedAt;
+    private void addSale(Sale  sale) {
+        sales.add(sale);
+        sale.setCashier(this);
+    }
+
+    private void removeSale(Sale sale) {
+        sales.remove(sale);
+        sale.setCashier(null);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,7 +1,7 @@
 package com.yolge.supermarket.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,18 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter @Setter
-@AllArgsConstructor @NoArgsConstructor
+@NoArgsConstructor
 @Entity
-public class Category {
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String description;
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    @SQLRestriction("deleted_at IS NULL")
-    private List<Product> products = new ArrayList<>();
+    private String dni;
+    private String email;
     private LocalDateTime deletedAt;
 
     @CreationTimestamp
@@ -33,14 +30,19 @@ public class Category {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public void addProduct(Product product) {
-        products.add(product);
-        product.setCategory(this);
+    @OneToMany(mappedBy = "client")
+    @SQLRestriction("status IS NOT 'CANCELLED'")
+    @JsonIgnoreProperties("client")
+    private List<Sale> sales = new ArrayList<>();
+
+    private void addSale(Sale sale) {
+        sales.add(sale);
+        sale.setClient(this);
     }
 
-    public void removeProduct(Product product) {
-        products.remove(product);
-        product.setCategory(null);
+    private void removeSale(Sale sale) {
+        sales.remove(sale);
+        sale.setClient(null);
     }
 
     public void softDelete() {

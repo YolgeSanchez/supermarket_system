@@ -37,10 +37,24 @@ public class Product {
     private List<Promotion> promotions = new ArrayList<>();
     private LocalDateTime deletedAt;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<SaleDetail> details = new ArrayList<>();
+
     @CreationTimestamp
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void addSaleDetail(SaleDetail detail) {
+        details.add(detail);
+        detail.setProduct(this);
+    }
+
+    public void removeSaleDetail(SaleDetail detail) {
+        details.remove(detail);
+        detail.setProduct(null);
+    }
 
     public Double getProductTotalPrice() {
         return basePrice + (basePrice * taxPercentage / 100);
