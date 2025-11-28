@@ -4,7 +4,9 @@ import com.yolge.supermarket.dto.auth.AuthRequest;
 import com.yolge.supermarket.dto.auth.AuthResponse;
 import com.yolge.supermarket.dto.auth.RegisterRequest;
 import com.yolge.supermarket.entity.User;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface AuthService {
     AuthResponse register(RegisterRequest user);
     AuthResponse login(AuthRequest request);

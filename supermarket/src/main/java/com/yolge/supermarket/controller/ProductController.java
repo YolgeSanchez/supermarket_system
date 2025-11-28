@@ -45,14 +45,14 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'CASHIER')")
     public ResponseEntity<ProductResponse> getById(@PathVariable Long id) {
         ProductResponse response = productService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'CASHIER')")
     public ResponseEntity<PageResponse<ProductResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,

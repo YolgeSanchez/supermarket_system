@@ -47,14 +47,14 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'INVENTORY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER', 'INVENTORY')")
     public ResponseEntity<CategoryResponse> getById(@PathVariable Long id) {
         CategoryResponse response = categoryService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'INVENTORY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CASHIER', 'INVENTORY')")
     public ResponseEntity<PageResponse<CategoryResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -67,7 +67,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/products")
-    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'CASHIER')")
     public ResponseEntity<PageResponse<ProductResponse>> searchProductsByCategoryId(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,

@@ -34,14 +34,14 @@ public class PromotionController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'CASHIER')")
     public ResponseEntity<PromotionResponse> getById(@PathVariable Long id) {
         PromotionResponse response = promotionService.getById(id);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'INVENTORY', 'CASHIER')")
     public ResponseEntity<PageResponse<PromotionResponse>> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
