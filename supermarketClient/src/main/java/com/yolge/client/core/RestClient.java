@@ -27,20 +27,17 @@ public class RestClient {
     private String authToken;
 
     private RestClient() {
-        // 1. Cliente HTTP optimizado
         this.client = HttpClient.newBuilder()
-                .version(HttpClient.Version.HTTP_2) // Usa HTTP/2 si es posible (más rápido)
+                .version(HttpClient.Version.HTTP_2)
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
 
-        // 2. Jackson Configurado
         this.mapper = new ObjectMapper();
-        this.mapper.registerModule(new JavaTimeModule()); // Fechas Java 8
-        this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // Evita errores si el backend agrega campos nuevos
+        this.mapper.registerModule(new JavaTimeModule());
+        this.mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        // 3. Carga segura de .env
         Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
-        this.baseUrl = dotenv.get("API_URL", "http://localhost:8080/api/v0.0"); // Valor por defecto por si acaso
+        this.baseUrl = dotenv.get("API_URL", "http://localhost:8080/api/v0.0");
     }
 
     public static synchronized RestClient getInstance() {
@@ -50,12 +47,9 @@ public class RestClient {
         return instance;
     }
 
-    // --- AUTENTICACIÓN ---
-
     public void login(String username, String password) throws Exception {
-        AuthRequest loginRequest = new AuthRequest(username, password); // Asegúrate de tener este DTO creado
+        AuthRequest loginRequest = new AuthRequest(username, password);
         
-        // Reutilizamos el método post interno
         AuthResponse response = post("/auth/login", loginRequest, AuthResponse.class);
         
         this.authToken = response.getToken();
@@ -68,8 +62,6 @@ public class RestClient {
     public boolean isLoggedIn() {
         return authToken != null;
     }
-
-    // --- MÉTODOS HTTP GENÉRICOS ---
 
     public <T> T get(String endpoint, Class<T> responseType) {
         HttpRequest request = buildRequest(endpoint).GET().build();
@@ -90,7 +82,6 @@ public class RestClient {
         return execute(request, responseType);
     }
     
-    // Método para PUT sin body (ej: actualizar cantidad en URL)
     public <T> T put(String endpoint, Class<T> responseType) {
         HttpRequest request = buildRequest(endpoint)
                 .PUT(HttpRequest.BodyPublishers.noBody())
@@ -99,7 +90,6 @@ public class RestClient {
     }
 
     public <T> T patch(String endpoint, Class<T> responseType) {
-         // Java 11 HttpClient no tiene .PATCH() nativo fácil, usamos method()
         HttpRequest request = buildRequest(endpoint)
                 .method("PATCH", HttpRequest.BodyPublishers.noBody())
                 .build();
@@ -110,8 +100,6 @@ public class RestClient {
         HttpRequest request = buildRequest(endpoint).DELETE().build();
         return execute(request, responseType);
     }
-
-    // --- INTERNOS (La Maquinaria) ---
 
     private HttpRequest.Builder buildRequest(String endpoint) {
         HttpRequest.Builder builder = HttpRequest.newBuilder()
@@ -131,50 +119,41 @@ public class RestClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return handleResponse(response, responseType);
         } catch (ApiException e) {
-            throw e; // Re-lanzar nuestra excepción limpia
+            throw e;
         } catch (Exception e) {
-            // Error de red o conexión
             throw new ApiException("Error de comunicación con el servidor: " + e.getMessage(), 503);
         }
     }
 
     private <T> T handleResponse(HttpResponse<String> response, Class<T> responseType) {
-        // 1. Manejo de Errores (400 - 599)
         if (response.statusCode() >= 400) {
             String finalMessage = "Error del servidor (" + response.statusCode() + ")";
 
             try {
-                // INTENTO 1: ¿Es un error de Validación de Campos (@Valid)?
-                // Jackson lanzará excepción si el JSON no coincide con la estructura
                 ValidationErrorDto validationError = mapper.readValue(response.body(), ValidationErrorDto.class);
 
                 if (validationError.getErrors() != null && !validationError.getErrors().isEmpty()) {
                     throw new ApiValidationException(validationError.getErrors());
                 }
             } catch (ApiValidationException ave) {
-                throw ave; // Si ya creamos la excepcion arriba, la dejamos pasar
+                throw ave;
             } catch (Exception ignored) {
-                // No era un ValidationErrorDto, seguimos intentando...
             }
 
             try {
-                // INTENTO 2: ¿Es un ErrorDto estándar (Logic/Not Found)?
                 ErrorDto errorDto = mapper.readValue(response.body(), ErrorDto.class);
                 if (errorDto.getMessage() != null) {
                     finalMessage = errorDto.getMessage();
                 }
             } catch (Exception ignored) {
-                // INTENTO 3: Fallback al texto crudo si todo falla
                 if (response.body() != null && !response.body().isBlank()) {
                     finalMessage = response.body();
                 }
             }
 
-            // Lanzamos la excepción final con el mejor mensaje que pudimos encontrar
             throw new ApiException(finalMessage, response.statusCode());
         }
 
-        // 2. Manejo de Éxito (Igual que antes)
         if (responseType == Void.class || response.body().isBlank()) {
             return null;
         }
