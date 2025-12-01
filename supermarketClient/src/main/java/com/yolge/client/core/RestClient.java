@@ -8,6 +8,7 @@ import com.yolge.client.dto.auth.AuthResponse;  // (Debes crear este DTO simple)
 import com.yolge.client.dto.error.ErrorDto;
 import com.yolge.client.dto.error.ValidationErrorDto;
 import com.yolge.client.exceptions.ApiException;
+import com.yolge.client.exceptions.ApiValidationException;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.net.URI;
@@ -148,18 +149,10 @@ public class RestClient {
                 ValidationErrorDto validationError = mapper.readValue(response.body(), ValidationErrorDto.class);
 
                 if (validationError.getErrors() != null && !validationError.getErrors().isEmpty()) {
-                    // Convertimos la lista ["nombre: vacio", "dni: error"] a un String multilinea
-                    StringBuilder sb = new StringBuilder("Errores de validación:\n");
-                    for (String err : validationError.getErrors()) {
-                        sb.append("- ").append(err).append("\n");
-                    }
-                    finalMessage = sb.toString();
-
-                    // Lanzamos ya, porque encontramos el error específico
-                    throw new ApiException(finalMessage, response.statusCode());
+                    throw new ApiValidationException(validationError.getErrors());
                 }
-            } catch (ApiException ae) {
-                throw ae; // Si ya creamos la excepcion arriba, la dejamos pasar
+            } catch (ApiValidationException ave) {
+                throw ave; // Si ya creamos la excepcion arriba, la dejamos pasar
             } catch (Exception ignored) {
                 // No era un ValidationErrorDto, seguimos intentando...
             }

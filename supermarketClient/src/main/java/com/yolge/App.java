@@ -10,6 +10,7 @@ public class App extends JFrame {
         setSize(1920, 1080);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setExtendedState(MAXIMIZED_BOTH);
         setLayout(new MigLayout("al center center"));
         add(new LoginForm());
     }
