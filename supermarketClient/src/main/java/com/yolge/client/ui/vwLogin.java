@@ -1,4 +1,4 @@
-package com.yolge.client.login;
+package com.yolge.client.ui;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -10,20 +10,21 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.util.List;
 
-public class LoginForm extends JPanel {
+public class vwLogin extends JPanel {
     private JTextField tfUsername;
     private JPasswordField tfPassword;
     private JLabel lbErrUsername;
     private JLabel lbErrPassword;
-    private JButton cmdLogin;
+    private JButton btnLogin;
+    private Runnable onLoginSuccess;
 
-    public LoginForm() {
+    public vwLogin(Runnable onLoginSuccess) {
+        this.onLoginSuccess = onLoginSuccess;
         init();
     }
 
     private void init() {
-        setSize(1920, 1080);
-        setLayout(new MigLayout("wrap, gapy 3", "[fill, 300]"));
+        setLayout(new MigLayout("al center center, wrap, gapy 3", "[fill, 300]"));
 
         addTitle();
         addSubtitle();
@@ -75,16 +76,16 @@ public class LoginForm extends JPanel {
     }
 
     private void addLoginButton() {
-        cmdLogin = new JButton("Iniciar sesión", new FlatSVGIcon("login/login.svg")) {
+        btnLogin = new JButton("Iniciar sesión", new FlatSVGIcon("login/login.svg")) {
             @Override
             public boolean isDefaultButton() {
                 return true;
             }
         };
-        cmdLogin.setHorizontalTextPosition(JButton.LEADING);
-        cmdLogin.putClientProperty(FlatClientProperties.STYLE, "" + "foreground:#FFFFFF;" + "IconTextGap:10;");
-        cmdLogin.addActionListener(e -> login());
-        add(cmdLogin, "gapy 10 10");
+        btnLogin.setHorizontalTextPosition(JButton.LEADING);
+        btnLogin.putClientProperty(FlatClientProperties.STYLE, "" + "foreground:#FFFFFF;" + "IconTextGap:10;");
+        btnLogin.addActionListener(e -> login());
+        add(btnLogin, "gapy 10 10");
     }
 
     private void login() {
@@ -100,8 +101,7 @@ public class LoginForm extends JPanel {
 
                 SwingUtilities.invokeLater(() -> {
                     loading(false);
-                    JOptionPane.showMessageDialog(this, "¡Login Correcto!");
-                    // AQUÍ VA EL CAMBIO DE PANTALLA
+                    onLoginSuccess.run();
                 });
 
             } catch (ApiValidationException ve) {
@@ -133,11 +133,11 @@ public class LoginForm extends JPanel {
     }
 
     private void loading(boolean activo) {
-        cmdLogin.setEnabled(!activo);
+        btnLogin.setEnabled(!activo);
         tfUsername.setEnabled(!activo);
         tfPassword.setEnabled(!activo);
-        if(activo) cmdLogin.setText("Cargando...");
-        else cmdLogin.setText("Iniciar sesión");
+        if(activo) btnLogin.setText("Cargando...");
+        else btnLogin.setText("Iniciar sesión");
     }
 
     private void cleanErrors() {
