@@ -1,6 +1,7 @@
 package com.yolge.client.core;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.yolge.client.dto.auth.AuthRequest;   // (Debes crear este DTO simple)
@@ -25,6 +26,8 @@ public class RestClient {
     private final ObjectMapper mapper;
     private final String baseUrl;
     private String authToken;
+    private String username;
+    private String currentRole;
 
     private RestClient() {
         this.client = HttpClient.newBuilder()
@@ -51,16 +54,40 @@ public class RestClient {
         AuthRequest loginRequest = new AuthRequest(username, password);
         
         AuthResponse response = post("/auth/login", loginRequest, AuthResponse.class);
-        
+
         this.authToken = response.getToken();
+        this.username = username;
+        this.currentRole = extractRoleFromToken(this.authToken);
     }
     
     public void logout() {
         this.authToken = null;
+        this.username = null;
+        this.currentRole = null;
     }
 
     public boolean isLoggedIn() {
         return authToken != null;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getRole() {
+        return currentRole;
+    }
+
+    public boolean isAdmin() {
+        return "ROLE_ADMIN".equals(currentRole) || "ADMIN".equals(currentRole);
+    }
+
+    public boolean isCashier() {
+        return "ROLE_CASHIER".equals(currentRole) || "CASHIER".equals(currentRole);
+    }
+
+    public boolean isInventory() {
+        return "ROLE_INVENTORY".equals(currentRole) || "INVENTORY".equals(currentRole);
     }
 
     public <T> T get(String endpoint, Class<T> responseType) {
@@ -162,6 +189,27 @@ public class RestClient {
             return mapper.readValue(response.body(), responseType);
         } catch (Exception e) {
             throw new ApiException("Error al procesar respuesta: " + e.getMessage(), 500);
+        }
+    }
+
+    private String extractRoleFromToken(String token) {
+        try {
+            String[] parts = token.split("\\.");
+            if (parts.length < 2) return null;
+
+            String payloadJson = new String(java.util.Base64.getUrlDecoder().decode(parts[1]));
+
+            JsonNode node = mapper.readTree(payloadJson);
+
+            if (node.has("role")) {
+                System.out.println(node.get("role").asText());
+                return node.get("role").asText();
+            }
+            return null;
+
+        } catch (Exception e) {
+            System.err.println("Error al decodificar token: " + e.getMessage());
+            return null;
         }
     }
 
