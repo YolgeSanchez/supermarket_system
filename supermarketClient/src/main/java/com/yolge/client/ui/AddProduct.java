@@ -18,7 +18,6 @@ import java.util.Objects;
 
 public class AddProduct extends JPanel {
 
-    // Campos de texto
     private JTextField txtName;
     private JTextField txtBrand;
     private JTextField txtBasePrice;
@@ -27,7 +26,6 @@ public class AddProduct extends JPanel {
     private JSpinner spStock;
     private JLabel lbTitle;
 
-    // Etiquetas de error (Ocultas por defecto)
     private JLabel lbErrName;
     private JLabel lbErrBrand;
     private JLabel lbErrBasePrice;
@@ -35,13 +33,11 @@ public class AddProduct extends JPanel {
     private JLabel lbErrCategory;
     private JLabel lbErrStock;
 
-    // Botones
     private JButton btnSave;
     private JButton btnCancel;
 
     private Long editingProductId = null;
 
-    // Lógica
     private final Runnable onClose;
     private final ProductService productService;
     private final CategoryService categoryService;
@@ -54,43 +50,36 @@ public class AddProduct extends JPanel {
         loadCategories(null);
     }
 
-    // --- NUEVO CONSTRUCTOR PARA MODO EDICIÓN ---
     public AddProduct(Runnable onClose, ProductResponse productToEdit) {
-        this(onClose); // Llama al constructor base
+        this(onClose);
         this.editingProductId = productToEdit.getId();
 
-        // Cambiar título y botón
         lbTitle.setText("Editar Producto #" + productToEdit.getId());
         btnSave.setText("Actualizar Producto");
 
-        // Rellenar campos
         txtName.setText(productToEdit.getName());
         txtBrand.setText(productToEdit.getBrand());
         txtBasePrice.setText(String.valueOf(productToEdit.getBasePrice()));
         txtTax.setText(String.valueOf(productToEdit.getTaxPercentage()));
         spStock.setValue(productToEdit.getStock());
 
-        // La categoría se selecciona automáticamente en loadCategories al terminar de cargar
         loadCategories(productToEdit.getCategory().getId());
     }
 
     private void init() {
-        // Layout: 2 columnas. hidemode 3 es vital para ocultar los errores sin dejar huecos
         setLayout(new MigLayout("wrap 2, fillx, insets 25 35 25 35, hidemode 3", "[trail]15[fill, 300]"));
 
         lbTitle = new JLabel("Crear nuevo producto");
         lbTitle.putClientProperty(FlatClientProperties.STYLE, "font:bold +10");
         add(lbTitle, "span 2, align center, gapbottom 20");
 
-        // --- CAMPOS CON SUS ERRORES ---
-        // Patrón: 1. Label Título, 2. Label Error (span 2), 3. Input
 
         // Nombre
         add(new JLabel("Nombre:"));
         txtName = new JTextField();
         add(txtName);
         lbErrName = createErrorLabel();
-        add(lbErrName, "skip 1, wrap"); // skip 1 para alinearlo bajo el input
+        add(lbErrName, "skip 1, wrap");
 
         // Marca
         add(new JLabel("Marca:"));
@@ -181,7 +170,6 @@ public class AddProduct extends JPanel {
     }
 
     private void saveAction() {
-        // 1. Recolección de datos (Igual que antes)
         ProductRequest request;
         try {
             String name = txtName.getText().trim();
@@ -202,13 +190,12 @@ public class AddProduct extends JPanel {
         cleanErrors();
         loading(true);
 
-        // 2. Lógica dual: Crear o Actualizar
         new Thread(() -> {
             try {
                 if (editingProductId == null) {
-                    productService.createProduct(request); // CREAR
+                    productService.createProduct(request);
                 } else {
-                    productService.updateProduct(editingProductId, request); // ACTUALIZAR
+                    productService.updateProduct(editingProductId, request);
                 }
 
                 SwingUtilities.invokeLater(() -> {

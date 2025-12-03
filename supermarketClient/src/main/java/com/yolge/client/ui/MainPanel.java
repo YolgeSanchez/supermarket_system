@@ -11,17 +11,12 @@ public class MainPanel extends JPanel {
     public MainPanel(Runnable onLogout) {
         setLayout(new BorderLayout());
 
-        // Crear el sidebar pasándole ambos callbacks:
-        // - changeView: para navegar entre vistas internas
-        // - onLogout: para volver al login
         sidebar = new Sidebar(this::changeView, onLogout);
         add(sidebar, BorderLayout.WEST);
 
-        // Crear el área de contenido con CardLayout
         contentCardLayout = new CardLayout();
         contentArea = new JPanel(contentCardLayout);
 
-        // Aquí irán todas las vistas/pantallas del sistema
         contentArea.add(createPlaceholderPanel("Ventas"), "ventas");
         contentArea.add(new vwProduct(), "productos");
         contentArea.add(createPlaceholderPanel("Categorías"), "categorías");
@@ -31,7 +26,6 @@ public class MainPanel extends JPanel {
 
         add(contentArea, BorderLayout.CENTER);
 
-        // Mostrar la primera vista por defecto
         contentCardLayout.show(contentArea, "productos");
     }
 

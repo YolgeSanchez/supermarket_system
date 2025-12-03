@@ -204,38 +204,35 @@ public class vwProduct extends JPanel {
     private void loadProducts() {
        setControlsEnabled(false);
 
-        // Ejecutar en un hilo separado para no bloquear la UI
-        SwingWorker<PageResponse<ProductResponse>, Void> worker = new SwingWorker<>() {
-            @Override
-            protected PageResponse<ProductResponse> doInBackground() throws Exception {
-                if (currentSearchTerm.isEmpty()) {
-                    return productService.getProducts(currentPage, pageSize);
-                } else {
-                    return productService.searchByName(currentPage, pageSize, currentSearchTerm);
-                }
-            }
+       SwingWorker<PageResponse<ProductResponse>, Void> worker = new SwingWorker<>() {
+           @Override
+           protected PageResponse<ProductResponse> doInBackground() throws Exception {
+               if (currentSearchTerm.isEmpty()) {
+                   return productService.getProducts(currentPage, pageSize);
+               } else {
+                   return productService.searchByName(currentPage, pageSize, currentSearchTerm);
+               }
+           }
 
-            @Override
-            protected void done() {
-                try {
-                    PageResponse<ProductResponse> response = get();
-                    displayProducts(response);
-                } catch (Exception ex) {
-                    handleError(ex);
-                } finally {
-                    setControlsEnabled(true);
-                }
-            }
-        };
+           @Override
+           protected void done() {
+               try {
+                   PageResponse<ProductResponse> response = get();
+                   displayProducts(response);
+               } catch (Exception ex) {
+                   handleError(ex);
+               } finally {
+                   setControlsEnabled(true);
+               }
+           }
+       };
 
-        worker.execute();
+       worker.execute();
     }
 
     private void displayProducts(PageResponse<ProductResponse> response) {
-        // Limpiar tabla
         products.setRowCount(0);
 
-        // Agregar productos a la tabla
         if (response.getContent() != null) {
             for (ProductResponse product : response.getContent()) {
                 Object[] rowData = {
@@ -257,7 +254,6 @@ public class vwProduct extends JPanel {
     private void searchProducts() {
         String searchTerm = tfSearch.getText().trim();
 
-        // Si el término de búsqueda cambió, resetear a la primera página
         if (!searchTerm.equals(currentSearchTerm)) {
             currentSearchTerm = searchTerm;
             currentPage = 0;
@@ -282,7 +278,6 @@ public class vwProduct extends JPanel {
                 JOptionPane.ERROR_MESSAGE
         );
 
-        // Limpiar tabla en caso de error
         products.setRowCount(0);
         pagination.setPageRange(1, 1);
     }
@@ -293,12 +288,11 @@ public class vwProduct extends JPanel {
 
         new Thread(() -> {
             try {
-                // 2. IMPORTANTE: Traer el producto COMPLETO del back (necesitamos tax, precio base, etc.)
                 ProductResponse productFull = productService.getProductById(id);
 
                 SwingUtilities.invokeLater(() -> {
                     setCursor(Cursor.getDefaultCursor());
-                    openProductModal(productFull); // Reutilizamos el modal pasando el producto
+                    openProductModal(productFull);
                 });
             } catch (Exception ex) {
                 SwingUtilities.invokeLater(() -> {
@@ -324,7 +318,7 @@ public class vwProduct extends JPanel {
                     productService.deleteProduct(id);
                     SwingUtilities.invokeLater(() -> {
                         JOptionPane.showMessageDialog(this, "Producto eliminado correctamente.");
-                        loadProducts(); // Recargar tabla
+                        loadProducts();
                     });
                 } catch (Exception ex) {
                     SwingUtilities.invokeLater(() -> {
@@ -345,7 +339,6 @@ public class vwProduct extends JPanel {
 
         final JDialog dialog = new JDialog(window != null ? (Frame) window : null, title, true);
 
-        // AQUÍ LA MAGIA: Usamos el constructor adecuado según si es nuevo o editar
         AddProduct formPanel;
         if (productToEdit == null) {
             formPanel = new AddProduct(() -> dialog.dispose());
@@ -360,7 +353,6 @@ public class vwProduct extends JPanel {
         dialog.setResizable(false);
         dialog.setVisible(true);
 
-        // Al cerrar, recargar tabla
         loadProducts();
     }
 

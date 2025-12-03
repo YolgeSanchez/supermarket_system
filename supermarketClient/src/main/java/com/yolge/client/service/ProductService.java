@@ -24,20 +24,16 @@ public class ProductService {
         return instance;
     }
 
-    // En ProductService.java
     public void createProduct(ProductRequest request) throws Exception {
-        // Asumimos que el endpoint es POST /products
         restClient.post("/products", request, ProductResponse.class);
     }
 
-    // Este método está bien porque no recibe Strings libres
     public PageResponse<ProductResponse> getProducts(int page, int size) {
         String endpoint = String.format("/products?page=%d&size=%d", page, size);
         return restClient.getPage(endpoint, ProductResponse.class);
     }
 
     public PageResponse<ProductResponse> searchByName(int page, int size, String name) {
-        // SOLUCIÓN: Codificar el parámetro para que "leche s" sea "leche%20s"
         String encodedName = URLEncoder.encode(name, StandardCharsets.UTF_8);
 
         String endpoint = String.format("/products?page=%d&size=%d&name=%s",
@@ -65,14 +61,11 @@ public class ProductService {
         return restClient.get("/products/" + id, ProductResponse.class);
     }
 
-    // 2. Actualizar (PUT)
     public void updateProduct(Long id, ProductRequest request) {
         restClient.put("/products/" + id, request, ProductResponse.class);
     }
 
-    // 3. Eliminar (DELETE)
     public void deleteProduct(Long id) {
-        // Usamos DeleteProductResponse.class porque tu back devuelve un objeto JSON, no vacío
         restClient.delete("/products/" + id, com.yolge.client.dto.product.DeleteProductResponse.class);
     }
 }
