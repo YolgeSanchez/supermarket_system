@@ -21,7 +21,7 @@ public class MainPanel extends JPanel {
         contentArea.add(new vwProduct(), "productos");
         contentArea.add(new vwCategory(), "categorías");
         contentArea.add(createPlaceholderPanel("Promociones"), "promociones");
-        contentArea.add(createPlaceholderPanel("Usuarios"), "usuarios");
+        contentArea.add(new vwUser(), "usuarios");
         contentArea.add(createPlaceholderPanel("Clientes"), "clientes");
 
         add(contentArea, BorderLayout.CENTER);
