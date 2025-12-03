@@ -8,11 +8,6 @@ public class MainPanel extends JPanel {
     private JPanel contentArea;
     private CardLayout contentCardLayout;
 
-    /**
-     * Constructor que recibe el callback de logout.
-     * 
-     * @param onLogout función a ejecutar cuando el usuario haga logout
-     */
     public MainPanel(Runnable onLogout) {
         setLayout(new BorderLayout());
 
@@ -28,7 +23,7 @@ public class MainPanel extends JPanel {
 
         // Aquí irán todas las vistas/pantallas del sistema
         contentArea.add(createPlaceholderPanel("Ventas"), "ventas");
-        contentArea.add(createPlaceholderPanel("Productos"), "productos");
+        contentArea.add(new vwProduct(), "productos");
         contentArea.add(createPlaceholderPanel("Categorías"), "categorías");
         contentArea.add(createPlaceholderPanel("Promociones"), "promociones");
         contentArea.add(createPlaceholderPanel("Usuarios"), "usuarios");
@@ -40,19 +35,10 @@ public class MainPanel extends JPanel {
         contentCardLayout.show(contentArea, "productos");
     }
 
-    /**
-     * Método que cambia la vista en el área de contenido.
-     * Este método es llamado por el Sidebar cuando se hace clic en un botón.
-     * 
-     * @param viewName nombre de la vista a mostrar
-     */
     private void changeView(String viewName) {
         contentCardLayout.show(contentArea, viewName);
     }
 
-    /**
-     * Panel temporal de placeholder mientras creas las vistas reales.
-     */
     private JPanel createPlaceholderPanel(String titulo) {
         JPanel panel = new JPanel(new GridBagLayout());
         JLabel label = new JLabel("Vista de " + titulo);

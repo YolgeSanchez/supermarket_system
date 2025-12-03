@@ -112,7 +112,7 @@ public class Sidebar extends JPanel {
     private void updateButtonStyle(JButton button, boolean isActive) {
         if (isActive) {
             button.putClientProperty(FlatClientProperties.STYLE, "" +
-                    "background:lighten(@accentColor,15%);" +
+                    "background:fade(@accentColor,45%);" +
                     "borderWidth:0;" +
                     "focusWidth:0;" +
                     "innerFocusWidth:0;" +
