@@ -69,6 +69,14 @@ public class vwProduct extends JPanel {
     }
 
     private void styleTable() {
+        javax.swing.table.DefaultTableCellRenderer leftRenderer = new javax.swing.table.DefaultTableCellRenderer();
+        leftRenderer.setHorizontalAlignment(javax.swing.JLabel.LEFT);
+
+        for (int i = 0; i < tbProduct.getColumnCount(); i++) {
+            tbProduct.getColumnModel().getColumn(i).setCellRenderer(leftRenderer);
+            tbProduct.getColumnModel().getColumn(i).setHeaderRenderer(leftRenderer);
+        }
+
         tbProduct.getTableHeader().setReorderingAllowed(false);
         tbProduct.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tbProduct.setRowHeight(34);
@@ -85,7 +93,7 @@ public class vwProduct extends JPanel {
         tbhProduct.putClientProperty(FlatClientProperties.STYLE, "" +
                 "height:38;" +
                 "font:semibold;" +
-                "background:@background;" +
+                "background:darken(@background, 5%);" +
                 "foreground:lighten(@foreground,20%);" +
                 "separatorColor:@background;" +
                 "bottomSeparatorColor:darken(@background,5%)");
@@ -96,6 +104,7 @@ public class vwProduct extends JPanel {
         tbProduct.getColumnModel().getColumn(3).setPreferredWidth(200);
         tbProduct.getColumnModel().getColumn(4).setPreferredWidth(50);
         tbProduct.getColumnModel().getColumn(5).setPreferredWidth(125);
+
     }
 
 
