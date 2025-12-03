@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.yolge.client.dto.PageResponse;
 import com.yolge.client.dto.auth.AuthRequest;   // (Debes crear este DTO simple)
 import com.yolge.client.dto.auth.AuthResponse;  // (Debes crear este DTO simple)
 import com.yolge.client.dto.error.ErrorDto;
@@ -189,6 +190,58 @@ public class RestClient {
             return mapper.readValue(response.body(), responseType);
         } catch (Exception e) {
             throw new ApiException("Error al procesar respuesta: " + e.getMessage(), 500);
+        }
+    }
+
+    public <T> PageResponse<T> getPage(String endpoint, Class<T> contentType) {
+        HttpRequest request = buildRequest(endpoint).GET().build();
+        return executePage(request, contentType);
+    }
+
+    private <T> PageResponse<T> executePage(HttpRequest request, Class<T> contentType) {
+        try {
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            return handlePageResponse(response, contentType);
+        } catch (ApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new ApiException("Error de comunicación con el servidor: " + e.getMessage(), 503);
+        }
+    }
+
+    private <T> PageResponse<T> handlePageResponse(HttpResponse<String> response, Class<T> contentType) {
+        if (response.statusCode() >= 400) {
+            String finalMessage = "Error del servidor (" + response.statusCode() + ")";
+
+            try {
+                ValidationErrorDto validationError = mapper.readValue(response.body(), ValidationErrorDto.class);
+                if (validationError.getErrors() != null && !validationError.getErrors().isEmpty()) {
+                    throw new ApiValidationException(validationError.getErrors());
+                }
+            } catch (ApiValidationException ave) {
+                throw ave;
+            } catch (Exception ignored) {}
+
+            try {
+                ErrorDto errorDto = mapper.readValue(response.body(), ErrorDto.class);
+                if (errorDto.getMessage() != null) {
+                    finalMessage = errorDto.getMessage();
+                }
+            } catch (Exception ignored) {
+                if (response.body() != null && !response.body().isBlank()) {
+                    finalMessage = response.body();
+                }
+            }
+
+            throw new ApiException(finalMessage, response.statusCode());
+        }
+
+        try {
+            var pageType = mapper.getTypeFactory()
+                    .constructParametricType(PageResponse.class, contentType);
+            return mapper.readValue(response.body(), pageType);
+        } catch (Exception e) {
+            throw new ApiException("Error al procesar respuesta paginada: " + e.getMessage(), 500);
         }
     }
 
