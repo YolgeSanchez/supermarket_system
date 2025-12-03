@@ -22,7 +22,7 @@ public class MainPanel extends JPanel {
         contentArea.add(new vwCategory(), "categorías");
         contentArea.add(createPlaceholderPanel("Promociones"), "promociones");
         contentArea.add(new vwUser(), "usuarios");
-        contentArea.add(createPlaceholderPanel("Clientes"), "clientes");
+        contentArea.add(new vwClient(), "clientes");
 
         add(contentArea, BorderLayout.CENTER);
 
