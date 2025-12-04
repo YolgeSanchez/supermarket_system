@@ -17,7 +17,7 @@ public class MainPanel extends JPanel {
         contentCardLayout = new CardLayout();
         contentArea = new JPanel(contentCardLayout);
 
-        contentArea.add(createPlaceholderPanel("Ventas"), "ventas");
+        contentArea.add(new vwSale(), "ventas");
         contentArea.add(new vwProduct(), "productos");
         contentArea.add(new vwCategory(), "categorías");
         contentArea.add(new vwPromotion(), "promociones");
