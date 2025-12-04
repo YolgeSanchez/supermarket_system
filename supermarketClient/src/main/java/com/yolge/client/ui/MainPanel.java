@@ -1,5 +1,7 @@
 package com.yolge.client.ui;
 
+import com.yolge.client.core.RestClient;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -17,12 +19,23 @@ public class MainPanel extends JPanel {
         contentCardLayout = new CardLayout();
         contentArea = new JPanel(contentCardLayout);
 
-        contentArea.add(new vwSale(), "ventas");
+        RestClient client = RestClient.getInstance();
+
         contentArea.add(new vwProduct(), "productos");
-        contentArea.add(new vwCategory(), "categorías");
-        contentArea.add(new vwPromotion(), "promociones");
-        contentArea.add(new vwUser(), "usuarios");
-        contentArea.add(new vwClient(), "clientes");
+
+        if (client.isAdmin()) {
+            contentArea.add(new vwCategory(), "categorías");
+            contentArea.add(new vwPromotion(), "promociones");
+            contentArea.add(new vwUser(), "usuarios");
+            contentArea.add(new vwClient(), "clientes");
+            contentArea.add(new vwSale(), "ventas");
+        } else if (client.isCashier()) {
+            contentArea.add(new vwClient(), "clientes");
+            contentArea.add(new vwSale(), "ventas");
+        } else if (client.isInventory()) {
+            contentArea.add(new vwCategory(), "categorías");
+            contentArea.add(new vwPromotion(), "promociones");
+        }
 
         add(contentArea, BorderLayout.CENTER);
 
@@ -31,13 +44,5 @@ public class MainPanel extends JPanel {
 
     private void changeView(String viewName) {
         contentCardLayout.show(contentArea, viewName);
-    }
-
-    private JPanel createPlaceholderPanel(String titulo) {
-        JPanel panel = new JPanel(new GridBagLayout());
-        JLabel label = new JLabel("Vista de " + titulo);
-        label.setFont(new Font("Arial", Font.BOLD, 24));
-        panel.add(label);
-        return panel;
     }
 }
