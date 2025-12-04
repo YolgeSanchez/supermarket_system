@@ -40,6 +40,13 @@ public class vwProduct extends JPanel {
         addTopBar();
         addPagination();
         loadProducts();
+
+        this.addComponentListener(new java.awt.event.ComponentAdapter() {
+            @Override
+            public void componentShown(java.awt.event.ComponentEvent e) {
+                loadProducts();
+            }
+        });
     }
 
     private void addTable() {
