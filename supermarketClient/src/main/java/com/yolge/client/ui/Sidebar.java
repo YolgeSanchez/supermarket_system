@@ -45,13 +45,13 @@ public class Sidebar extends JPanel {
 
         JLabel lblUsername = new JLabel(username != null ? username : "Usuario", new FlatSVGIcon("login/user.svg").setColorFilter(new FlatSVGIcon.ColorFilter(color -> Color.BLACK)), JLabel.LEFT);
         lblUsername.putClientProperty(FlatClientProperties.STYLE, "" +
-                "font:bold +3;" +
+                "font:bold +5;" +
                 "iconTextGap:8;" +
                 "background:darken(@background,1%);");
 
         JLabel lblRole = new JLabel(role);
         lblRole.putClientProperty(FlatClientProperties.STYLE, "" +
-                "font:italic -1;" +
+                "font:italic +3;" +
                 "foreground:lighten(@foreground,30%)");
 
         userPanel.add(lblUsername, "split 2");
@@ -112,6 +112,7 @@ public class Sidebar extends JPanel {
     private void updateButtonStyle(JButton button, boolean isActive) {
         if (isActive) {
             button.putClientProperty(FlatClientProperties.STYLE, "" +
+                    "font:bold +2;" +
                     "background:fade(@accentColor,45%);" +
                     "borderWidth:0;" +
                     "focusWidth:0;" +
@@ -119,7 +120,8 @@ public class Sidebar extends JPanel {
                     "arc:4");
         } else {
             button.putClientProperty(FlatClientProperties.STYLE, "" +
-                    "background:darken(@background, 1%);" +
+                    "font:bold +2;" +
+                    "background:darken(@background, 3%);" +
                     "borderWidth:0;" +
                     "focusWidth:0;" +
                     "innerFocusWidth:0;" +
