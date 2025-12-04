@@ -80,7 +80,7 @@ Sigue estos pasos para poner en marcha el sistema en tu entorno local.
 
 ### Prerrequisitos
 
-- Java JDK 17 o superior
+- Java JDK 21 o superior
 - Maven
 - MySQL Server
 
