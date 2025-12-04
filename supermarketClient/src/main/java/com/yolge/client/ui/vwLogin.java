@@ -101,6 +101,8 @@ public class vwLogin extends JPanel {
 
                 SwingUtilities.invokeLater(() -> {
                     loading(false);
+                    tfUsername.setText("");
+                    tfPassword.setText("");
                     onLoginSuccess.run();
                 });
 
