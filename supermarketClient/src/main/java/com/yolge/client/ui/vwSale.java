@@ -267,8 +267,8 @@ public class vwSale extends JPanel {
         new Thread(() -> {
             try {
                 PageResponse<ProductResponse> response;
-                if(catSearch.isEmpty()) response = productService.getProducts(catPage, 14); // 14 items caben bien
-                else response = productService.searchByName(catPage, 14, catSearch);
+                if(catSearch.isEmpty()) response = productService.getProducts(catPage, 19); // 14 items caben bien
+                else response = productService.searchByName(catPage, 19, catSearch);
                 
                 SwingUtilities.invokeLater(() -> {
                     modelCatalog.setRowCount(0);
